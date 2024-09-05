@@ -34,13 +34,13 @@ class ChatCallbackHandler(BaseCallbackHandler):
         self.message_box.markdown(self.message)
 
 
-# llm = ChatOpenAI(
-#     temperature=0.1,
-#     streaming=True,
-#     callbacks=[
-#         ChatCallbackHandler(),
-#     ],
-# )
+llm = ChatOpenAI(
+    temperature=0.1,
+    streaming=True,
+    callbacks=[
+        ChatCallbackHandler(),
+    ],
+)
 
 
 @st.cache_data(show_spinner="Embedding file...")
@@ -134,54 +134,13 @@ with st.sidebar:
         else:
             st.write("API KEY is saved.")
 
-# if file:
-#     retriever = embed_file(file)
-#     send_message("I'm ready! Ask away!", "ai", save=False)
-#     paint_history()
-#     message = st.chat_input("Ask anything about your file...")
-#     if message:
-#         send_message(message, "human")
-#         chain = (
-#             {
-#                 "context": retriever | RunnableLambda(format_docs),
-#                 "question": RunnablePassthrough(),
-#             }
-#             | prompt
-#             | llm
-#         )
-#         with st.chat_message("ai"):
-#             chain.invoke(message)
-
-if file and api_key is not "":
-    
-    llm = ChatOpenAI(
-        temperature=0.1,
-        model="gpt-4o-mini",
-        streaming=True,
-        callbacks={
-            ChatCallbackHandler(),
-        },
-        openai_api_key=api_key,
-    )
-
-    
-    prompt = ChatPromptTemplate.from_messages([    
-        ("system", 
-         "You are a helpful assistant. Answer questions using only the following context. "
-         "If you don't know the answer, just say you don't know, don't make it up:\n\n{context}"),
-        ("human", "{question}"),
-    ])
-
-    
+if file:
     retriever = embed_file(file)
     send_message("I'm ready! Ask away!", "ai", save=False)
     paint_history()
-
-   
-    message = st.chat_input("Ask questions about your file...")
+    message = st.chat_input("Ask anything about your file...")
     if message:
         send_message(message, "human")
-        
         chain = (
             {
                 "context": retriever | RunnableLambda(format_docs),
@@ -190,11 +149,54 @@ if file and api_key is not "":
             | prompt
             | llm
         )
-        try:
-            
-            with st.chat_message("ai"):
-                chain.invoke(message)
-        except Exception as e:
-            send_message(f"Error occurred: {e}", "ai", save=False)
+        with st.chat_message("ai"):
+            chain.invoke(message)
 else:
     st.session_state["messages"] = []
+
+# if file and api_key is not "":
+    
+#     llm = ChatOpenAI(
+#         temperature=0.1,
+#         model="gpt-4o-mini",
+#         streaming=True,
+#         callbacks={
+#             ChatCallbackHandler(),
+#         },
+#         openai_api_key=api_key,
+#     )
+
+    
+#     prompt = ChatPromptTemplate.from_messages([    
+#         ("system", 
+#          "You are a helpful assistant. Answer questions using only the following context. "
+#          "If you don't know the answer, just say you don't know, don't make it up:\n\n{context}"),
+#         ("human", "{question}"),
+#     ])
+
+    
+#     retriever = embed_file(file)
+#     send_message("I'm ready! Ask away!", "ai", save=False)
+#     paint_history()
+
+   
+#     message = st.chat_input("Ask questions about your file...")
+#     if message:
+#         send_message(message, "human")
+        
+#         chain = (
+#             {
+#                 "context": retriever | RunnableLambda(format_docs),
+#                 "question": RunnablePassthrough(),
+#             }
+#             | prompt
+#             | llm
+#         )
+#         try:
+            
+#             with st.chat_message("ai"):
+#                 chain.invoke(message)
+#         except Exception as e:
+#             send_message(f"Error occurred: {e}", "ai", save=False)
+# else:
+#     st.session_state["messages"] = []
