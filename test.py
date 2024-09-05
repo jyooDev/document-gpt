@@ -9,6 +9,13 @@ from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler
 import streamlit as st
 import os
+
+if "api_key" not in st.session_state:
+    st.session_state["api_key"] = None
+
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [] 
+
 st.set_page_config(
     page_title="DocumentGPT",
     page_icon="📃",
@@ -42,7 +49,7 @@ llm = ChatOpenAI(
 def embed_file(file):
     file_content = file.read()
     file_path = f"./.cache/files/{file.name}"
-    os.makedirs(os.path.dirname(new_file_path), exist_ok=True) 
+    os.makedirs(os.path.dirname(file_path), exist_ok=True) 
     with open(file_path, "wb") as f:
         f.write(file_content)
     cache_dir_path = f"./.cache/embeddings/{file.name}"    
@@ -119,6 +126,15 @@ with st.sidebar:
         "Upload a .txt .pdf or .docx file",
         type=["pdf", "txt", "docx"],
     )
+
+    api_key = st.text_input("Enter API_KEY").strip()
+    button = st.button("SAVE")
+    if button:
+        if api_key == "":
+            st.warning("Enter API Key.")
+        else:
+            st.session_state["api_key"] = api_key 
+            st.write("API KEY is saved.")
 
 if file:
     retriever = embed_file(file)
