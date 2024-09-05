@@ -54,7 +54,7 @@ def embed_file(file):
 
     splitter = CharacterTextSplitter.from_tiktoken_encoder(
         separator="\n", 
-        chunk_size=1000,
+        chunk_size=600,
         chunk_overlap=100,
     )
 
