@@ -154,7 +154,7 @@ with st.sidebar:
 #         with st.chat_message("ai"):
 #             chain.invoke(message)
 
-if file and st.session_state["api_key"]:
+if file and st.session_state["api_key"] is not None:
     
     llm = ChatOpenAI(
         temperature=0.1,
