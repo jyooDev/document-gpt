@@ -10,8 +10,6 @@ from langchain.callbacks.base import BaseCallbackHandler
 import streamlit as st
 import os
 
-if "api_key" not in st.session_state:
-    st.session_state["api_key"] = None
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = [] 
@@ -63,7 +61,7 @@ def embed_file(file):
     )
     loader = UnstructuredFileLoader(file_path)
     docs = loader.load_and_split(text_splitter=splitter)
-    embeddings = OpenAIEmbeddings()
+    embeddings = OpenAIEmbeddings(openai_api_key=api_key)
     cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_dir)
     vectorstore = FAISS.from_documents(docs, cached_embeddings)
     retriever = vectorstore.as_retriever()
@@ -121,6 +119,7 @@ Upload your files on the sidebar.
 """
 )
 
+api_key = ""
 with st.sidebar:
     file = st.file_uploader(
         "Upload a .txt .pdf or .docx file",
@@ -133,7 +132,6 @@ with st.sidebar:
         if api_key == "":
             st.warning("Enter API Key.")
         else:
-            st.session_state["api_key"] = api_key 
             st.write("API KEY is saved.")
 
 # if file:
@@ -154,7 +152,7 @@ with st.sidebar:
 #         with st.chat_message("ai"):
 #             chain.invoke(message)
 
-if file and st.session_state["api_key"] is not None:
+if file and api_key is not "":
     
     llm = ChatOpenAI(
         temperature=0.1,
@@ -163,7 +161,7 @@ if file and st.session_state["api_key"] is not None:
         callbacks={
             ChatCallbackHandler(),
         },
-        openai_api_key=st.session_state["api_key"],
+        openai_api_key=api_key,
     )
 
     
