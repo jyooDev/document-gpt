@@ -15,11 +15,20 @@ st.set_page_config(
 )
 
 with st.sidebar:
-    api_key = st.text_input()
     file = st.file_uploader(
         "Upload a .txt .pdf or .docx file",
         type=["pdf", "txt", "docx"],
     )
+
+
+    api_key = st.text_input("Enter API_KEY").strip()
+    button = st.button("SAVE")
+    if button:
+        if api_key == "":
+            st.warning("Enter API Key.")
+        else: 
+            st.write("API KEY is saved.")
+
 class ChatCallbackHandler(BaseCallbackHandler):
     message = ""
 
