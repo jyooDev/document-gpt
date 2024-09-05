@@ -8,7 +8,7 @@ from langchain.vectorstores.faiss import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler
 import streamlit as st
-
+import os
 st.set_page_config(
     page_title="DocumentGPT",
     page_icon="📃",
@@ -42,9 +42,13 @@ llm = ChatOpenAI(
 def embed_file(file):
     file_content = file.read()
     file_path = f"./.cache/files/{file.name}"
+    os.makedirs(os.path.dirname(new_file_path), exist_ok=True) 
     with open(file_path, "wb") as f:
         f.write(file_content)
-    cache_dir = LocalFileStore(f"./.cache/embeddings/{file.name}")
+    cache_dir_path = f"./.cache/embeddings/{file.name}"    
+    os.makedirs(os.path.dirname(cache_dir_path), exist_ok=True)  
+    cache_dir = LocalFileStore(cache_dir_path)
+    
     splitter = CharacterTextSplitter.from_tiktoken_encoder(
         separator="\n",
         chunk_size=600,
