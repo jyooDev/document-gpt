@@ -14,8 +14,9 @@ st.set_page_config(
     page_icon="📃",
 )
 
-api_key = st.sidebar.text_input()
-file = st.sidebar.file_uploader(
+with st.sidebar:
+    api_key = st.text_input()
+    file = st.file_uploader(
         "Upload a .txt .pdf or .docx file",
         type=["pdf", "txt", "docx"],
     )
