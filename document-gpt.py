@@ -19,16 +19,18 @@ st.set_page_config(
 
 
 class ChatCallbackHandler(BaseCallbackHandler):
+    message = ""
+
     def on_llm_start(self, *args, **kwargs):
         self.message_box = st.empty()
 
     def on_llm_end(self, *args, **kwargs):
-        self.message(self.message, "ai")
+        save_message(self.message, "ai")
 
     def on_llm_new_token(self, token, *args, **kwargs):
         self.message += token
-        if self.message_box:
-            self.message_box.markdown(self.message)
+        self.message_box.markdown(self.message)
+
 
 
 @st.cache_resource
